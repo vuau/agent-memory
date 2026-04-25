@@ -1,8 +1,7 @@
 # Dependencies
 node_modules/
 
-# Build artifacts
-dist/
+# Build artifacts (dist/ is included — it's the published output)
 build/
 *.tgz
 

@@ -3,21 +3,27 @@
   "version": "0.1.0",
   "description": "Structured AI memory for codebases — OpenCode plugin + scaffolding CLI",
   "type": "module",
-  "main": "index.ts",
+  "main": "./dist/index.js",
   "exports": {
-    ".": "./index.ts"
+    ".": "./dist/index.js"
   },
   "bin": {
-    "agent-memory": "./bin/cli.ts"
+    "agent-memory": "./dist/bin/cli.js"
   },
   "files": [
-    "index.ts",
-    "src/",
+    "dist/",
     "templates/",
-    "bin/",
     "docs/",
     "README.md"
   ],
+  "scripts": {
+    "build": "tsup",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^6.0.3"
+  },
   "keywords": [
     "opencode",
     "opencode-plugin",

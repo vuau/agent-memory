@@ -1,4 +1,3 @@
-#!/usr/bin/env node --experimental-strip-types --no-warnings
 /**
  * CLI entry point for @vuau/agent-memory
  *
