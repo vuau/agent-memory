@@ -2,23 +2,24 @@
  * Core constants and types shared across all entry points.
  */
 
+// ─────────────────────────────────────────────────────────────
+// File paths
+// ─────────────────────────────────────────────────────────────
+
 export const AGENTS_DIR = ".agents"
 export const SPEC_DIR = ".agents/spec"
 export const MEMORY_FILE = ".agents/MEMORY.md"
 export const TASKS_FILE = ".agents/TASKS.md"
-export const AGENTS_MD = "AGENTS.md"
-export const COPILOT_INSTRUCTIONS = ".github/copilot-instructions.md"
 
-export interface AgentMemoryConfig {
-  /** Project name used in templates */
-  projectName?: string
-  /** Custom spec categories to scaffold */
-  specFiles?: string[]
-  /** Whether to create .github/copilot-instructions.md */
-  copilotInstructions?: boolean
-  /** Whether to wire up OpenCode plugin (.opencode/package.json + opencode.json) */
-  opencode?: boolean
-}
+// IDE-specific config files
+export const AGENTS_MD = "AGENTS.md"                              // OpenCode
+export const COPILOT_INSTRUCTIONS = ".github/copilot-instructions.md"  // GitHub Copilot
+export const CURSOR_RULES = ".cursorrules"                        // Cursor
+export const WINDSURF_RULES = ".windsurfrules"                    // Windsurf
+
+// ─────────────────────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────────────────────
 
 export interface DoctorResult {
   ok: boolean

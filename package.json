@@ -1,7 +1,7 @@
 {
   "name": "@vuau/agent-memory",
-  "version": "0.2.1",
-  "description": "Structured AI memory for codebases — OpenCode plugin + scaffolding CLI",
+  "version": "0.3.0",
+  "description": "Structured AI memory for codebases — scaffolding CLI for OpenCode, Copilot, Cursor, Windsurf",
   "type": "module",
   "main": "./dist/index.js",
   "exports": {
@@ -25,27 +25,20 @@
     "typescript": "^6.0.3"
   },
   "keywords": [
-    "opencode",
-    "opencode-plugin",
     "agent-memory",
     "ai-memory",
     "agents",
+    "opencode",
     "copilot",
     "cursor",
-    "windsurf"
+    "windsurf",
+    "claude",
+    "cli"
   ],
   "author": "Au Pham <phamvuau@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vuau/agent-memory.git"
-  },
-  "peerDependencies": {
-    "@opencode-ai/plugin": ">=1.0.0"
-  },
-  "peerDependenciesMeta": {
-    "@opencode-ai/plugin": {
-      "optional": true
-    }
   }
 }

@@ -11,7 +11,7 @@ export default defineConfig([
       js: "#!/usr/bin/env node",
     },
   },
-  // Library entry — OpenCode plugin + public API
+  // Library entry — core utilities for programmatic use
   {
     entry: { index: "index.ts" },
     format: ["esm"],

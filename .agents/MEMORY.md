@@ -13,5 +13,7 @@ Curated decisions, patterns, and pointers. Agents: read before implementing.
 ## Patterns
 <!-- Reusable code patterns discovered during development -->
 
+- 2026-04-25: OpenCode plugin — wrap `client.tui.showToast()` in try-catch; TUI unavailable in headless/CI mode, fallback to `client.app.log()`
+
 ## Workflow
 <!-- Development workflow decisions and tooling choices -->

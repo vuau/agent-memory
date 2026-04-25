@@ -13,105 +13,64 @@ AI coding assistants lose context between sessions. They can't remember:
 
 **agent-memory** solves this with a simple file-based memory system that any AI can read.
 
-## Research & Architecture
+## Quick Start
 
-Want to understand the reasoning behind this approach?
+```bash
+# Interactive mode — choose your IDEs
+npx @vuau/agent-memory init
 
-- **[RESEARCH.md](./docs/RESEARCH.md)** — Problem, experiments with memsearch/MCP, comparison matrix, why file-based wins
-- **[ARCHITECTURE.md](./docs/ARCHITECTURE.md)** — 4-layer design, scalability, IDE integration, migration guide
+# Or specify directly
+npx @vuau/agent-memory init --opencode           # OpenCode only
+npx @vuau/agent-memory init --copilot --cursor   # Multiple IDEs
+npx @vuau/agent-memory init --all                # All IDEs
+```
 
-Read these if you're evaluating solutions or migrating from other systems.
-
-## Architecture: 4 Layers
+## What It Creates
 
 ```
 / (Project Root)
-├── AGENTS.md                    # Layer 1: Router — rules + pointers (~100 lines)
+├── AGENTS.md                    # OpenCode rules
+├── .cursorrules                 # Cursor rules
+├── .windsurfrules               # Windsurf rules
 ├── .github/
-│   └── copilot-instructions.md  # Router for GitHub Copilot
-├── .agents/
-│   ├── MEMORY.md                # Layer 2: Long-term memory — curated decisions
-│   ├── TASKS.md                 # Layer 3: Working memory — current plans
-│   └── spec/
-│       ├── architecture.md      # Layer 4: Specs — detailed documentation
-│       └── ...
+│   └── copilot-instructions.md  # GitHub Copilot rules
+└── .agents/
+    ├── MEMORY.md                # Long-term memory (decisions, patterns)
+    ├── TASKS.md                 # Working memory (current tasks)
+    └── spec/                    # Detailed specs (on-demand)
 ```
-
-### Layer 1: Router (AGENTS.md)
-- Root file every AI IDE reads first
-- Max 150 lines — rules + pointers to spec files
-- **Not** a knowledge dump — a table of contents
-
-### Layer 2: Long-term Memory (.agents/MEMORY.md)
-- Curated decisions and patterns (1-line entries)
-- Category headers with pointers to spec files
-- Agents write here when user approves a decision
-
-### Layer 3: Working Memory (.agents/TASKS.md)
-- Current tasks, in-progress work, next steps
-- Updated at start/end of sessions
-- Enables cross-session continuity
-
-### Layer 4: Specs (.agents/spec/)
-- Detailed documentation per domain
-- Referenced by MEMORY.md pointers
-- Agents read on-demand, not every session
-
-## Install
-
-### As OpenCode Plugin
-
-```json
-// opencode.json
-{
-  "plugin": ["@vuau/agent-memory"]
-}
-```
-
-The plugin auto-scaffolds `.agents/` on first session and provides lifecycle hooks.
-
-### Standalone (any project)
-
-```bash
-npx @vuau/agent-memory init
-```
-
-### Options
-
-```bash
-npx @vuau/agent-memory init --force          # Overwrite existing files
-npx @vuau/agent-memory init --name "My App"  # Custom project name
-npx @vuau/agent-memory init --no-copilot     # Skip copilot-instructions.md
-npx @vuau/agent-memory init --opencode       # Wire up OpenCode plugin
-npx @vuau/agent-memory doctor                # Validate structure
-```
-
-#### `--opencode` flag
-
-Wires up the OpenCode plugin automatically:
-- Creates/updates `.opencode/package.json` with `@vuau/agent-memory` dependency
-- Creates/updates `opencode.json` with `"plugin": ["@vuau/agent-memory"]`
-
-After running, restart OpenCode to activate the plugin.
 
 ## How It Works
 
-### For AI Agents
-1. Agent reads `AGENTS.md` → finds documentation map
-2. Before implementing → reads `MEMORY.md` for past decisions
-3. Needs details → follows pointer to spec file
-4. User approves decision → agent appends to `MEMORY.md`
-5. End of session → agent updates `TASKS.md`
+1. **You run `init`** → Creates IDE config files + `.agents/` structure
+2. **Agent reads rules** → Finds documentation map pointing to `.agents/`
+3. **Agent works** → Reads MEMORY.md before implementing, updates TASKS.md
+4. **You approve decision** → Agent writes 1-line entry to MEMORY.md
+5. **Next session** → Agent reads memory, continues where you left off
 
-### For Developers
-- `MEMORY.md` = curated knowledge (you control what stays)
-- `TASKS.md` = resume where you left off
-- `spec/` = detailed docs agents update as they explore
-- All markdown — readable by humans, agents, and any IDE
+**No plugin required.** The rules in AGENTS.md/copilot-instructions.md instruct the agent what to do.
+
+## CLI Options
+
+```bash
+npx @vuau/agent-memory init [options]
+
+Options:
+  --opencode    Create AGENTS.md for OpenCode
+  --copilot     Create .github/copilot-instructions.md
+  --cursor      Create .cursorrules
+  --windsurf    Create .windsurfrules
+  --all         Create config for all IDEs
+  --force       Overwrite existing files without asking
+  --name <n>    Project name (default: from package.json)
+
+npx @vuau/agent-memory doctor   # Validate structure
+npx @vuau/agent-memory help     # Show help
+```
 
 ## Memory Protocol
 
-Agents follow this protocol (defined in AGENTS.md):
+Agents follow this protocol (defined in config files):
 
 ```markdown
 ## When to write
@@ -126,39 +85,53 @@ Agents follow this protocol (defined in AGENTS.md):
 ### MEMORY.md Example
 
 ```markdown
-## Storybook Prototypes
-→ Full spec: `.agents/spec/storybook.md`
-- 2026-04-24: State files = 3 layers (interfaces → defaults → variants via spread)
-- 2026-04-24: Dumb components: initialState prop + optional callbacks. No services.
+## Patterns
+- 2026-04-24: State files = 3 layers (interfaces → defaults → variants)
+- 2026-04-24: Dumb components: initialState prop + optional callbacks
 
-## Responsive Design
+## Decisions
 - 2026-04-06: Use useMediaQuery over CSS display:none for heavy components
 ```
 
+## Architecture
+
+### 4-Layer Design
+
+| Layer | File | Purpose |
+|-------|------|---------|
+| Router | AGENTS.md / .cursorrules / etc | Rules + pointers (~100 lines) |
+| Memory | .agents/MEMORY.md | Curated decisions (1-line each) |
+| Tasks | .agents/TASKS.md | Current work, next steps |
+| Specs | .agents/spec/*.md | Detailed docs (on-demand) |
+
+### Why File-Based?
+
+We tested memsearch, qmd, mem0, memories.sh — all failed for various reasons (see [RESEARCH.md](./docs/RESEARCH.md)):
+
+- **Context Blindness**: Auto-capture can't link user intent to prior analysis
+- **Context Bloat**: Fallback to transcripts costs 47k+ tokens
+- **Platform issues**: Dependencies don't work on Windows/VM
+
+File-based solution:
+- Agent writes when they understand context (quality > automation)
+- Plain markdown (portable, git-versionable, human-readable)
+- No dependencies (works everywhere)
+
 ## Cross-IDE Compatibility
 
-| IDE | Reads | Writes |
-|-----|-------|--------|
-| OpenCode | AGENTS.md + .agents/* (auto via plugin) | MEMORY.md, TASKS.md, spec/* |
-| GitHub Copilot | copilot-instructions.md → .agents/* | MEMORY.md (via rules) |
-| Cursor | .cursorrules → .agents/* | MEMORY.md (via rules) |
-| Windsurf | .windsurfrules → .agents/* | MEMORY.md (via rules) |
+| IDE | Config File | Reads .agents/* |
+|-----|-------------|-----------------|
+| OpenCode | AGENTS.md | ✅ |
+| GitHub Copilot | .github/copilot-instructions.md | ✅ |
+| Cursor | .cursorrules | ✅ |
+| Windsurf | .windsurfrules | ✅ |
 
-## Roadmap
-
-- [x] OpenCode plugin with lifecycle hooks
-- [x] CLI scaffolding (`npx init`, `doctor`)
-- [ ] VSCode extension (sidebar, Copilot Chat integration)
-- [ ] Memory archiving and compression
-- [ ] Multi-project memory sharing
+All IDEs use the same `.agents/` memory structure.
 
 ## Documentation
 
-- **[RESEARCH.md](./docs/RESEARCH.md)** — Problem, experiments, comparison, solution
-- **[RESEARCH.vi.md](./docs/RESEARCH.vi.md)** — Vietnamese version
-- **[ARCHITECTURE.md](./docs/ARCHITECTURE.md)** — 4-layer architecture & scalability
-- **[ARCHITECTURE.vi.md](./docs/ARCHITECTURE.vi.md)** — Vietnamese version
-- **[README.vi.md](./README.vi.md)** — Vietnamese README
+- **[RESEARCH.md](./docs/RESEARCH.md)** — Problem, experiments, comparison, why file-based wins
+- **[ARCHITECTURE.md](./docs/ARCHITECTURE.md)** — 4-layer design, scalability, migration
 
 ## License
 
