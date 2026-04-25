@@ -17,18 +17,19 @@ import {
   type AgentMemoryConfig,
 } from "./types.ts"
 
-// Resolve templates dir relative to this file (works in both Bun and Node)
+// Resolve templates dir relative to this file (works in both Bun and Node ESM)
 function getTemplatesDir(): string {
-  // Try import.meta based resolution
-  try {
-    const thisDir = dirname(fileURLToPath(import.meta.url))
-    const candidate = resolve(thisDir, "../../templates")
-    if (existsSync(candidate)) return candidate
-  } catch {}
-  // Fallback: walk up from __dirname if available
-  const candidate2 = resolve(__dirname, "../../templates")
-  if (existsSync(candidate2)) return candidate2
-  throw new Error("Cannot locate templates directory")
+  const thisDir = dirname(fileURLToPath(import.meta.url))
+  
+  // When running from source: src/core/scaffold.ts → ../../templates
+  const fromSource = resolve(thisDir, "../../templates")
+  if (existsSync(fromSource)) return fromSource
+  
+  // When running from dist: dist/index.js → ../templates
+  const fromDist = resolve(thisDir, "../templates")
+  if (existsSync(fromDist)) return fromDist
+  
+  throw new Error(`Cannot locate templates directory (checked ${fromSource} and ${fromDist})`)
 }
 
 const TEMPLATES_DIR = getTemplatesDir()
