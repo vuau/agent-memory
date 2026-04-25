@@ -8,12 +8,8 @@ Working memory for cross-session continuity. Update before ending a session.
 
 
 ## Up Next
-- Create GitHub repo vuau/agent-memory (public), push code
-  - Manual: `cd ~/work/agent-memory && git init && git add . && git commit -m "Initial commit" && git remote add origin https://github.com/vuau/agent-memory.git && git push -u origin main`
-  - Or use GitHub web UI
-- npm login (as phamvuau) and npm publish @vuau/agent-memory
-  - Pre-checked: `npm pack --dry-run` shows 19 KB, 22 files, ready
-  - See ~/work/agent-memory for .gitignore and .npmignore
+- Update UI-challenges project's opencode.json to use @vuau/agent-memory plugin
+- Phase 3: VSCode extension (@vuau/agent-memory-vscode) — reuse src/core/
 - Test @vuau/agent-memory in fresh project (npm install @vuau/agent-memory)
 - Update UI-challenges project's opencode.json to use @vuau/agent-memory plugin
 - Phase 3: VSCode extension (@vuau/agent-memory-vscode) — reuse src/core/
@@ -35,3 +31,6 @@ Working memory for cross-session continuity. Update before ending a session.
 - 2026-04-25: Plugin implements session.created, session.idle, tool.execute.after hooks
 - 2026-04-25: Created .gitignore and .npmignore for clean repository
 - 2026-04-25: Verified npm pack output — 19 KB, 22 files, ready to publish
+- 2026-04-25: Created GitHub repo vuau/agent-memory, pushed code
+- 2026-04-25: Published @vuau/agent-memory@0.1.0 to npm (public)
+- 2026-04-25: Tested CLI init/doctor (works with bun, Node type-stripping issue)
