@@ -8,7 +8,7 @@
     ".": "./dist/index.js"
   },
   "bin": {
-    "agent-memory": "./dist/bin/cli.js"
+    "agent-memory": "dist/bin/cli.js"
   },
   "files": [
     "dist/",
@@ -38,7 +38,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vuau/agent-memory"
+    "url": "git+https://github.com/vuau/agent-memory.git"
   },
   "peerDependencies": {
     "@opencode-ai/plugin": ">=1.0.0"

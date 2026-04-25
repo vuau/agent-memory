@@ -4,7 +4,7 @@
  * Idempotent: skips existing files unless force=true.
  */
 
-import { existsSync, mkdirSync, writeFileSync, readFileSync } from "fs"
+import { existsSync, mkdirSync, writeFileSync, readFileSync, appendFileSync } from "fs"
 import { join, resolve, dirname } from "path"
 import { fileURLToPath } from "url"
 import {
@@ -107,7 +107,64 @@ export function scaffold(
     result.created.push(`${SPEC_DIR}/.gitkeep`)
   }
 
+  // Wire up OpenCode plugin if requested
+  if (config.opencode) {
+    scaffoldOpenCode(projectDir, result, force)
+  }
+
   return result
+}
+
+function scaffoldOpenCode(projectDir: string, result: ScaffoldResult, force: boolean): void {
+  const PACKAGE_NAME = "@vuau/agent-memory"
+
+  // .opencode/package.json — create or merge dependency
+  const opencodePkgPath = join(projectDir, ".opencode", "package.json")
+  const opencodeDir = join(projectDir, ".opencode")
+  if (!existsSync(opencodeDir)) {
+    mkdirSync(opencodeDir, { recursive: true })
+  }
+
+  if (!existsSync(opencodePkgPath)) {
+    writeFileSync(
+      opencodePkgPath,
+      JSON.stringify({ dependencies: { [PACKAGE_NAME]: "latest" } }, null, 2) + "\n"
+    )
+    result.created.push(".opencode/package.json")
+  } else {
+    const pkg = JSON.parse(readFileSync(opencodePkgPath, "utf-8"))
+    const deps = pkg.dependencies || {}
+    if (!deps[PACKAGE_NAME] || force) {
+      deps[PACKAGE_NAME] = "latest"
+      pkg.dependencies = deps
+      writeFileSync(opencodePkgPath, JSON.stringify(pkg, null, 2) + "\n")
+      if (!deps[PACKAGE_NAME]) {
+        result.created.push(".opencode/package.json")
+      }
+    } else {
+      result.skipped.push(".opencode/package.json")
+    }
+  }
+
+  // opencode.json — create or merge plugin array
+  const opencodeJsonPath = join(projectDir, "opencode.json")
+  if (!existsSync(opencodeJsonPath)) {
+    writeFileSync(
+      opencodeJsonPath,
+      JSON.stringify({ plugin: [PACKAGE_NAME] }, null, 2) + "\n"
+    )
+    result.created.push("opencode.json")
+  } else {
+    const config = JSON.parse(readFileSync(opencodeJsonPath, "utf-8"))
+    const plugins: string[] = config.plugin || []
+    if (!plugins.includes(PACKAGE_NAME)) {
+      config.plugin = [...plugins, PACKAGE_NAME]
+      writeFileSync(opencodeJsonPath, JSON.stringify(config, null, 2) + "\n")
+      result.created.push("opencode.json (merged plugin)")
+    } else {
+      result.skipped.push("opencode.json")
+    }
+  }
 }
 
 function guessProjectName(dir: string): string {

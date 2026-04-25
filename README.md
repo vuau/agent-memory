@@ -82,8 +82,17 @@ npx @vuau/agent-memory init
 npx @vuau/agent-memory init --force          # Overwrite existing files
 npx @vuau/agent-memory init --name "My App"  # Custom project name
 npx @vuau/agent-memory init --no-copilot     # Skip copilot-instructions.md
+npx @vuau/agent-memory init --opencode       # Wire up OpenCode plugin
 npx @vuau/agent-memory doctor                # Validate structure
 ```
+
+#### `--opencode` flag
+
+Wires up the OpenCode plugin automatically:
+- Creates/updates `.opencode/package.json` with `@vuau/agent-memory` dependency
+- Creates/updates `opencode.json` with `"plugin": ["@vuau/agent-memory"]`
+
+After running, restart OpenCode to activate the plugin.
 
 ## How It Works
 

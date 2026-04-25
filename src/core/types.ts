@@ -16,6 +16,8 @@ export interface AgentMemoryConfig {
   specFiles?: string[]
   /** Whether to create .github/copilot-instructions.md */
   copilotInstructions?: boolean
+  /** Whether to wire up OpenCode plugin (.opencode/package.json + opencode.json) */
+  opencode?: boolean
 }
 
 export interface DoctorResult {

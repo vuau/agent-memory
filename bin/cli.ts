@@ -25,12 +25,14 @@ Options (init):
   --force                        Overwrite existing files
   --name <name>                  Project name (default: from package.json)
   --no-copilot                   Skip .github/copilot-instructions.md
+  --opencode                     Wire up OpenCode plugin (.opencode/package.json + opencode.json)
 `)
 }
 
 function runInit() {
   const force = args.includes("--force")
   const noCopilot = args.includes("--no-copilot")
+  const opencode = args.includes("--opencode")
   const nameIdx = args.indexOf("--name")
   const projectName = nameIdx !== -1 ? args[nameIdx + 1] : undefined
 
@@ -40,6 +42,7 @@ function runInit() {
   const result = scaffold(cwd, {
     projectName,
     copilotInstructions: !noCopilot,
+    opencode,
   }, force)
 
   if (result.created.length > 0) {
@@ -63,7 +66,11 @@ function runInit() {
   console.log("\nNext steps:")
   console.log("  1. Edit AGENTS.md — add your project-specific rules")
   console.log("  2. Add spec files to .agents/spec/ for detailed documentation")
-  console.log("  3. For OpenCode: add to opencode.json → { \"plugin\": [\"@vuau/agent-memory\"] }")
+  if (opencode) {
+    console.log("  3. Restart OpenCode to activate the plugin")
+  } else {
+    console.log("  3. For OpenCode: run with --opencode flag to wire up the plugin")
+  }
   console.log("")
 }
 
