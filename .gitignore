@@ -1,0 +1,15 @@
+node_modules/
+*.tgz
+dist/
+build/
+.DS_Store
+.memsearch/
+npm-debug.log
+.env
+.env.local
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.npm

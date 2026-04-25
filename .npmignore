@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Build artifacts
+dist/
+build/
+*.tgz
+
+# Testing & dev
+.memsearch/
+npm-debug.log
+test/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+*.swp
+
+# Environment
+.env
+.env.local
+
+# Documentation (keep README, but exclude research docs for minimal publish)
+docs/.memsearch/
