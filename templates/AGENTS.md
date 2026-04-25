@@ -12,7 +12,8 @@ Router file for AI agents. Keep under 150 lines.
 
 | Task | Spec File |
 |------|-----------|
-| Past decisions & patterns | `.agents/MEMORY.md` |
+| Past decisions (1-line) | `.agents/MEMORY.md` |
+| Past decisions (full context) | `.agents/MEMORY-DETAIL.md` |
 | Current work in progress | `.agents/TASKS.md` |
 
 > Add your own spec files to `.agents/spec/` and reference them here.
@@ -26,9 +27,9 @@ Router file for AI agents. Keep under 150 lines.
 
 ### MEMORY.md entry format
 ```
-- YYYY-MM-DD: <1-line decision or pattern>
+- YYYY-MM-DD: <1-line decision or pattern> → detail
 ```
-Place under the appropriate category. Add `→ spec file` pointer if details belong in a spec.
+Place under the appropriate category. Add `→ detail` pointer when full context exists in MEMORY-DETAIL.md.
 
 ### TASKS.md update
 Before ending a session with unfinished work, move items to `## In Progress` or `## Up Next`.

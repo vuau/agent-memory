@@ -12,7 +12,8 @@ Router file for GitHub Copilot. Points to shared agent documentation.
 
 | Task | Spec File |
 |------|-----------|
-| Past decisions & patterns | `.agents/MEMORY.md` |
+| Past decisions (1-line) | `.agents/MEMORY.md` |
+| Past decisions (full context) | `.agents/MEMORY-DETAIL.md` |
 | Current work in progress | `.agents/TASKS.md` |
 
 > Add your own spec files to `.agents/spec/` and reference them here.
@@ -25,6 +26,6 @@ Router file for GitHub Copilot. Points to shared agent documentation.
 
 ## Memory Protocol
 - When user approves a decision → append 1-line entry to `.agents/MEMORY.md` under appropriate category.
-- Format: `- YYYY-MM-DD: <decision>`.
-- Read `.agents/MEMORY.md` before implementing; follow spec file pointers for details.
+- Format: `- YYYY-MM-DD: <decision> → detail` (add `→ detail` when full context exists in MEMORY-DETAIL.md).
+- Read `.agents/MEMORY.md` before implementing; follow pointers for details.
 - Do not create additional memory files.

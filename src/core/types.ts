@@ -9,6 +9,7 @@
 export const AGENTS_DIR = ".agents"
 export const SPEC_DIR = ".agents/spec"
 export const MEMORY_FILE = ".agents/MEMORY.md"
+export const MEMORY_DETAIL_FILE = ".agents/MEMORY-DETAIL.md"
 export const TASKS_FILE = ".agents/TASKS.md"
 
 // IDE-specific config files

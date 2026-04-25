@@ -12,6 +12,7 @@ import {
   AGENTS_DIR,
   SPEC_DIR,
   MEMORY_FILE,
+  MEMORY_DETAIL_FILE,
   TASKS_FILE,
   AGENTS_MD,
   COPILOT_INSTRUCTIONS,
@@ -115,6 +116,7 @@ export function scaffold(projectDir: string, options: ScaffoldOptions = {}): Sca
   
   const coreFiles: Array<{ target: string; template: string }> = [
     { target: MEMORY_FILE, template: "MEMORY.md" },
+    { target: MEMORY_DETAIL_FILE, template: "MEMORY-DETAIL.md" },
     { target: TASKS_FILE, template: "TASKS.md" },
   ]
 
