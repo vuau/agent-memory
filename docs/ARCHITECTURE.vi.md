@@ -111,7 +111,7 @@ Tài liệu này đề xuất kiến trúc khả năng skalabiliti cho AI memory
 **Agent behavior**:
 - Read khi session start → hiểu context, resume work
 - Update trước session end → gì done, gì next
-- Plugin reminds nếu tasks exist nhưng không update
+- Rules trong AGENTS.md nhắc agent update tasks
 
 ---
 
@@ -171,16 +171,15 @@ Tài liệu này đề xuất kiến trúc khả năng skalabiliti cho AI memory
 ## IDE Integration Points
 
 ### OpenCode
-- Reads: AGENTS.md (via plugin hook)
-- Plugin auto-injects: `.agents/MEMORY.md` context khi session start
-- Plugin reminds: Update TASKS.md khi session idle
+- Reads: `AGENTS.md` (native)
+- Agents follow rules trong AGENTS.md
 - Writes: Agent appends đến MEMORY.md/TASKS.md/spec/
 
 ### GitHub Copilot (VSCode)
 - Reads: `.github/copilot-instructions.md` (GitHub convention)
 - copilot-instructions.md = cùng router format với AGENTS.md
 - Points đến `.agents/MEMORY.md` + spec files
-- Writes: User includes `@save memory: <decision>` trong chat → agent appends
+- Writes: Agent follows rules → appends khi appropriate
 
 ### Cursor / Windsurf
 - Reads: `.cursorrules` / `.windsurfrules` (IDE convention)
@@ -253,18 +252,15 @@ Tài liệu này đề xuất kiến trúc khả năng skalabiliti cho AI memory
 
 ## Công cụ Support
 
-### OpenCode Plugin (Hiện tại)
-- ✓ session.created → log memory file status
-- ✓ tool.execute.after → track spec file edits
-- ✓ session.idle → remind update TASKS.md
-- Planned: ✗ Auto-inject MEMORY.md vào next agent session
-
-### CLI (Hiện tại)
-- ✓ `npx @vuau/agent-memory init` — scaffold structure
+### CLI
+- ✓ `npx @vuau/agent-memory init` — scaffold structure (interactive hoặc với flags)
+- ✓ `npx @vuau/agent-memory init --opencode` — chỉ OpenCode
+- ✓ `npx @vuau/agent-memory init --copilot --cursor` — nhiều IDEs
+- ✓ `npx @vuau/agent-memory init --all` — tất cả IDEs
 - ✓ `npx @vuau/agent-memory doctor` — validate structure
 - Planned: ✗ `report` — generate memory stats, archival suggestions
 
-### VSCode Extension (Planned Phase 3)
+### VSCode Extension (Planned)
 - Sidebar showing MEMORY.md categories
 - Copilot Chat integration → inject relevant spec file trên user request
 - Quick commands: "Add decision", "Update task"

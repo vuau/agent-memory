@@ -11,87 +11,64 @@ AI coding assistants mất bối cảnh giữa các phiên. Họ không thể nh
 
 **agent-memory** giải quyết bằng hệ thống bộ nhớ đơn giản dựa trên file mà bất kỳ AI nào cũng có thể đọc.
 
-## Kiến trúc: 4 Lớp
+## Bắt đầu nhanh
+
+```bash
+# Interactive mode — chọn IDEs của bạn
+npx @vuau/agent-memory init
+
+# Hoặc chỉ định trực tiếp
+npx @vuau/agent-memory init --opencode           # Chỉ OpenCode
+npx @vuau/agent-memory init --copilot --cursor   # Nhiều IDEs
+npx @vuau/agent-memory init --all                # Tất cả IDEs
+```
+
+## Cấu trúc tạo ra
 
 ```
 / (Project Root)
-├── AGENTS.md                    # Lớp 1: Router — rules + pointers (~100 dòng)
+├── AGENTS.md                    # OpenCode rules
+├── .cursorrules                 # Cursor rules
+├── .windsurfrules               # Windsurf rules
 ├── .github/
-│   └── copilot-instructions.md  # Router cho GitHub Copilot
-├── .agents/
-│   ├── MEMORY.md                # Lớp 2: Long-term memory — curated decisions
-│   ├── TASKS.md                 # Lớp 3: Working memory — current plans
-│   └── spec/
-│       ├── architecture.md      # Lớp 4: Specs — detailed documentation
-│       └── ...
-```
-
-### Lớp 1: Router (AGENTS.md)
-- Root file mọi IDE đọc đầu tiên
-- Max 150 dòng — rules + pointers đến spec files
-- **Không phải** knowledge dump — table of contents
-
-### Lớp 2: Long-term Memory (.agents/MEMORY.md)
-- Curated decisions và patterns (1-line entries)
-- Category headers với pointers đến spec files
-- Agents ghi khi user approves decision
-
-### Lớp 3: Working Memory (.agents/TASKS.md)
-- Current tasks, in-progress work, next steps
-- Updated khi session start/end
-- Enable cross-session continuity
-
-### Lớp 4: Specs (.agents/spec/)
-- Detailed documentation per domain
-- Referenced bởi MEMORY.md pointers
-- Agents đọc on-demand, không every session
-
-## Cài đặt
-
-### Như OpenCode Plugin
-
-```json
-// opencode.json
-{
-  "plugin": ["@vuau/agent-memory"]
-}
-```
-
-Plugin auto-scaffolds `.agents/` khi session đầu tiên và cung cấp lifecycle hooks.
-
-### Standalone (any project)
-
-```bash
-npx @vuau/agent-memory init
-```
-
-### Tùy chọn
-
-```bash
-npx @vuau/agent-memory init --force          # Overwrite existing files
-npx @vuau/agent-memory init --name "My App"  # Custom project name
-npx @vuau/agent-memory init --no-copilot     # Skip copilot-instructions.md
-npx @vuau/agent-memory doctor                # Validate structure
+│   └── copilot-instructions.md  # GitHub Copilot rules
+└── .agents/
+    ├── MEMORY.md                # Long-term memory (decisions, patterns)
+    ├── TASKS.md                 # Working memory (current tasks)
+    └── spec/                    # Detailed specs (on-demand)
 ```
 
 ## Cách hoạt động
 
-### Cho AI Agents
-1. Agent đọc `AGENTS.md` → tìm documentation map
-2. Trước khi implement → đọc `MEMORY.md` cho decisions trong quá khứ
-3. Cần details → follow pointer đến spec file
-4. User approves decision → agent append vào `MEMORY.md`
-5. End of session → agent update `TASKS.md`
+1. **Bạn chạy `init`** → Tạo IDE config files + `.agents/` structure
+2. **Agent đọc rules** → Tìm documentation map trỏ đến `.agents/`
+3. **Agent làm việc** → Đọc MEMORY.md trước khi implement, update TASKS.md
+4. **Bạn approve decision** → Agent ghi 1-line entry vào MEMORY.md
+5. **Phiên tiếp theo** → Agent đọc memory, tiếp tục từ nơi dừng lại
 
-### Cho Developers
-- `MEMORY.md` = curated knowledge (bạn kiểm soát gì còn lại)
-- `TASKS.md` = resume từ nơi dừng lại
-- `spec/` = detailed docs agents update khi explore
-- Tất cả markdown — readable bởi humans, agents, và any IDE
+**Không cần plugin.** Rules trong AGENTS.md/copilot-instructions.md hướng dẫn agent phải làm gì.
+
+## CLI Options
+
+```bash
+npx @vuau/agent-memory init [options]
+
+Options:
+  --opencode    Tạo AGENTS.md cho OpenCode
+  --copilot     Tạo .github/copilot-instructions.md
+  --cursor      Tạo .cursorrules
+  --windsurf    Tạo .windsurfrules
+  --all         Tạo config cho tất cả IDEs
+  --force       Ghi đè files có sẵn mà không hỏi
+  --name <n>    Tên project (mặc định: từ package.json)
+
+npx @vuau/agent-memory doctor   # Validate structure
+npx @vuau/agent-memory help     # Hiện help
+```
 
 ## Memory Protocol
 
-Agents follow protocol này (defined trong AGENTS.md):
+Agents follow protocol này (defined trong config files):
 
 ```markdown
 ## Khi nào ghi
@@ -106,39 +83,53 @@ Agents follow protocol này (defined trong AGENTS.md):
 ### MEMORY.md Ví dụ
 
 ```markdown
-## Storybook Prototypes
-→ Full spec: `.agents/spec/storybook.md`
-- 2026-04-24: State files = 3 layers (interfaces → defaults → variants via spread)
-- 2026-04-24: Dumb components: initialState prop + optional callbacks. No services.
+## Patterns
+- 2026-04-24: State files = 3 layers (interfaces → defaults → variants)
+- 2026-04-24: Dumb components: initialState prop + optional callbacks
 
-## Responsive Design
+## Decisions
 - 2026-04-06: Use useMediaQuery over CSS display:none cho heavy components
 ```
 
+## Kiến trúc
+
+### Thiết kế 4-Layer
+
+| Layer | File | Mục đích |
+|-------|------|----------|
+| Router | AGENTS.md / .cursorrules / etc | Rules + pointers (~100 dòng) |
+| Memory | .agents/MEMORY.md | Curated decisions (1-line each) |
+| Tasks | .agents/TASKS.md | Current work, next steps |
+| Specs | .agents/spec/*.md | Detailed docs (on-demand) |
+
+### Tại sao File-Based?
+
+Chúng tôi đã test memsearch, qmd, mem0, memories.sh — tất cả failed vì nhiều lý do (xem [RESEARCH.md](./docs/RESEARCH.md)):
+
+- **Context Blindness**: Auto-capture không thể link user intent với prior analysis
+- **Context Bloat**: Fallback sang transcripts tốn 47k+ tokens
+- **Platform issues**: Dependencies không work trên Windows/VM
+
+File-based solution:
+- Agent ghi khi họ hiểu context (quality > automation)
+- Plain markdown (portable, git-versionable, human-readable)
+- Không dependencies (works everywhere)
+
 ## Cross-IDE Compatibility
 
-| IDE | Reads | Writes |
-|-----|-------|--------|
-| OpenCode | AGENTS.md + .agents/* (auto via plugin) | MEMORY.md, TASKS.md, spec/* |
-| GitHub Copilot | copilot-instructions.md → .agents/* | MEMORY.md (via rules) |
-| Cursor | .cursorrules → .agents/* | MEMORY.md (via rules) |
-| Windsurf | .windsurfrules → .agents/* | MEMORY.md (via rules) |
+| IDE | Config File | Reads .agents/* |
+|-----|-------------|-----------------|
+| OpenCode | AGENTS.md | ✅ |
+| GitHub Copilot | .github/copilot-instructions.md | ✅ |
+| Cursor | .cursorrules | ✅ |
+| Windsurf | .windsurfrules | ✅ |
 
-## Roadmap
-
-- [x] OpenCode plugin với lifecycle hooks
-- [x] CLI scaffolding (`npx init`, `doctor`)
-- [ ] VSCode extension (sidebar, Copilot Chat integration)
-- [ ] Memory archiving và compression
-- [ ] Multi-project memory sharing
+Tất cả IDEs dùng cùng `.agents/` memory structure.
 
 ## Tài liệu
 
-- **[RESEARCH.md](./docs/RESEARCH.md)** — Vấn đề, thử nghiệm, so sánh, giải pháp
-- **[RESEARCH.vi.md](./docs/RESEARCH.vi.md)** — Bản tiếng Việt của RESEARCH
-- **[ARCHITECTURE.md](./docs/ARCHITECTURE.md)** — 4-layer architecture & scalability
-- **[ARCHITECTURE.vi.md](./docs/ARCHITECTURE.vi.md)** — Bản tiếng Việt của ARCHITECTURE
-- **[README.md](./README.md)** — English version
+- **[RESEARCH.md](./docs/RESEARCH.md)** — Vấn đề, thử nghiệm, so sánh, tại sao file-based thắng
+- **[ARCHITECTURE.md](./docs/ARCHITECTURE.md)** — 4-layer design, scalability, migration
 
 ## License
 

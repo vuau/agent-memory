@@ -253,18 +253,15 @@ This document proposes a generalizable architecture for AI memory across codebas
 
 ## Tooling Support
 
-### OpenCode Plugin (Current)
-- ✓ session.created → log memory file status
-- ✓ tool.execute.after → track spec file edits
-- ✓ session.idle → remind update TASKS.md
-- Planned: ✗ Auto-inject MEMORY.md into next agent session
-
-### CLI (Current)
-- ✓ `npx @vuau/agent-memory init` — scaffold structure
+### CLI
+- ✓ `npx @vuau/agent-memory init` — scaffold structure (interactive or with flags)
+- ✓ `npx @vuau/agent-memory init --opencode` — OpenCode only
+- ✓ `npx @vuau/agent-memory init --copilot --cursor` — multiple IDEs
+- ✓ `npx @vuau/agent-memory init --all` — all IDEs
 - ✓ `npx @vuau/agent-memory doctor` — validate structure
 - Planned: ✗ `report` — generate memory stats, archival suggestions
 
-### VSCode Extension (Planned Phase 3)
+### VSCode Extension (Planned)
 - Sidebar showing MEMORY.md categories
 - Copilot Chat integration → inject relevant spec file on user request
 - Quick commands: "Add decision", "Update task"

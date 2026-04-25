@@ -19,8 +19,6 @@ AI assistants (OpenCode, Copilot, Cursor, Windsurf) lose context between session
 | **mem0** | ✅ (hooks) | ❌ | Requires OpenAI API key or HuggingFace models | ❌ Failed |
 | **memories.sh** | ✅ (MCP) | ✅ | Auto-generates 10+ IDE config files (bloats repo) | ⚠️ Rejected |
 | **codemem** | ❌ | ❌ | Flaky (unreliable save/recall) | ⚠️ Rejected |
-| **OpenCode plugin** | ✅ (lifecycle hooks) | ✅ | None | ✅ **Viable** |
-| **GitHub Copilot native** | Partial (skills) | ✅ | No lifecycle hooks; no direct session integration | ⚠️ Limited |
 | **File-based + rules** | Manual (via rules) | ✅ | None | ✅ **CHOSEN** |
 
 ---
@@ -84,13 +82,12 @@ AI assistants (OpenCode, Copilot, Cursor, Windsurf) lose context between session
 ### 4. **IDE Portability**
 | IDE | Integration | Works Now |
 |-----|-------------|-----------|
-| OpenCode | Plugin hooks | ✅ Yes |
+| OpenCode | Reads `AGENTS.md` | ✅ Yes |
 | GitHub Copilot | Reads `.github/copilot-instructions.md` | ✅ Yes |
 | Cursor | Reads `.cursorrules` | ✅ Yes |
 | Windsurf | Reads `.windsurfrules` | ✅ Yes |
-| VS Code | Reads markdown in workspace | ✅ Yes |
 
-No custom driver needed per IDE. Markdown is portable.
+No custom plugin needed per IDE. Markdown is portable.
 
 ### 5. **Sharing & Sync**
 - Lives in git repo → automatically shared via Git/Rsync/Dropbox
@@ -175,7 +172,7 @@ TOTAL:                          700 tokens
 - ✅ Context aware: Agent writes when they understand
 - ✅ Curated: Only important decisions survive
 - ✅ Portable: Works everywhere (no dependencies)
-- ❌ Needs agent discipline (mitigated by plugin reminders)
+- ✅ No plugin maintenance burden
 
 **Verdict**: Quality + Portability > Automation for teams of 1-10.
 
@@ -184,16 +181,12 @@ TOTAL:                          700 tokens
 ## Cross-IDE Reality Check
 
 ### ✅ What Works Now
-- OpenCode: Plugin hooks + session lifecycle
+- OpenCode: Reads `AGENTS.md` natively
 - Copilot: Reads `.github/copilot-instructions.md` natively
 - Cursor: Reads `.cursorrules`
 - Windsurf: Reads `.windsurfrules`
-- VS Code: Reads markdown files
 
-### ⚠️ Limitations
-- Copilot doesn't have lifecycle hooks (can't auto-remind to update tasks)
-- Cursor/Windsurf limited to reading rules, not injecting context
-- **Solution**: VSCode extension (Phase 3) to provide unified sidebar
+All IDEs follow rules in their config file → agent writes to `.agents/MEMORY.md` when appropriate.
 
 ---
 

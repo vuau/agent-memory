@@ -19,8 +19,6 @@ AI assistants (OpenCode, Copilot, Cursor, Windsurf) mất context giữa session
 | **mem0** | ✅ (hooks) | ❌ | Cần OpenAI API key hoặc HuggingFace models | ❌ Failed |
 | **memories.sh** | ✅ (MCP) | ✅ | Auto-generate 10+ IDE config files (bloat repo) | ⚠️ Rejected |
 | **codemem** | ❌ | ❌ | Flaky (unreliable save/recall) | ⚠️ Rejected |
-| **OpenCode plugin** | ✅ (lifecycle hooks) | ✅ | None | ✅ **Viable** |
-| **GitHub Copilot native** | Partial (skills) | ✅ | Không có lifecycle hooks | ⚠️ Limited |
 | **File-based + rules** | Manual (via rules) | ✅ | None | ✅ **CHOSEN** |
 
 ---
@@ -84,13 +82,12 @@ AI assistants (OpenCode, Copilot, Cursor, Windsurf) mất context giữa session
 ### 4. **IDE Portability**
 | IDE | Integration | Works Now |
 |-----|-------------|-----------|
-| OpenCode | Plugin hooks | ✅ Yes |
+| OpenCode | Reads `AGENTS.md` | ✅ Yes |
 | GitHub Copilot | Reads `.github/copilot-instructions.md` | ✅ Yes |
 | Cursor | Reads `.cursorrules` | ✅ Yes |
 | Windsurf | Reads `.windsurfrules` | ✅ Yes |
-| VS Code | Reads markdown | ✅ Yes |
 
-Không cần custom driver per IDE. Markdown portable.
+Không cần custom plugin per IDE. Markdown portable.
 
 ### 5. **Sharing & Sync**
 - Live trong git repo → auto-shared via Git/Rsync/Dropbox
@@ -175,7 +172,7 @@ TOTAL:                          700 tokens
 - ✅ Context aware: Agent ghi khi họ hiểu
 - ✅ Curated: Chỉ important decisions sống sót
 - ✅ Portable: Hoạt động everywhere (no dependencies)
-- ❌ Cần agent discipline (mitigated bởi plugin reminders)
+- ✅ Không cần maintain plugin
 
 **Verdict**: Quality + Portability > Automation cho teams 1-10.
 
@@ -184,16 +181,12 @@ TOTAL:                          700 tokens
 ## Cross-IDE Reality Check
 
 ### ✅ Gì hoạt động ngay
-- OpenCode: Plugin hooks + session lifecycle
+- OpenCode: Read `AGENTS.md` natively
 - Copilot: Read `.github/copilot-instructions.md` natively
 - Cursor: Read `.cursorrules`
 - Windsurf: Read `.windsurfrules`
-- VS Code: Read markdown files
 
-### ⚠️ Limitations
-- Copilot không có lifecycle hooks (cannot auto-remind update tasks)
-- Cursor/Windsurf limited tới read rules, không inject context
-- **Solution**: VSCode extension (Phase 3) để provide unified sidebar
+Tất cả IDEs follow rules trong config file → agent ghi vào `.agents/MEMORY.md` khi appropriate.
 
 ---
 
