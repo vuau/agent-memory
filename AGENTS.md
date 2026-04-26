@@ -1,40 +1,41 @@
-# agent-memory - AGENTS
+# @vuau/agent-memory - AGENTS
 
-Router file for AI agents working on the @vuau/agent-memory package.
+Router file for AI agents.
 
-## What this project is
-npm package `@vuau/agent-memory` — structured AI memory for codebases.
-- OpenCode plugin (lifecycle hooks, auto-scaffold)
-- CLI (`npx @vuau/agent-memory init|doctor`)
-- Shared core logic in `src/core/` (prepared for future VSCode extension reuse)
+> **Note**: This file is automatically managed by `@vuau/agent-memory`.
+> Do not add project-specific rules here, as they may be overwritten by `agent-memory update`.
+>
+> 👉 **For project-specific rules, context, and document mapping, see `.agents/CUSTOM.md`**
 
-## Documentation Map
+## Priority
+1. User request first.
+2. The rules in `.agents/CUSTOM.md`.
+3. This `AGENTS.md`.
+4. Spec files in `.agents/spec/`.
+5. If conflict remains, choose smallest safe change and state assumption.
 
-| Task | File |
-|------|------|
-| Current tasks & next steps | `.agents/TASKS.md` |
-| Package config | `package.json` |
-| Architecture & usage | `README.md` |
+## Memory Protocol
 
-## Project Structure
+### When to write
+- User approves a decision or pattern → append to `.agents/MEMORY.md`
+- Explore codebase/architecture → update relevant `.agents/spec/*.md`
+- Start/finish a large task → update `.agents/TASKS.md`
+
+### MEMORY.md entry format
 ```
-index.ts              # OpenCode plugin entry (exports AgentMemoryPlugin)
-src/core/             # Shared logic — scaffold, memory, tasks, doctor
-src/opencode/         # OpenCode-specific plugin hooks
-bin/cli.ts            # CLI entry — init, doctor commands
-templates/            # Scaffold templates with {{PROJECT_NAME}} vars
+- YYYY-MM-DD: <1-line decision or pattern> → detail
 ```
+Place under the appropriate category. Add `→ detail` pointer when full context exists in MEMORY-DETAIL.md.
 
-## Key Decisions
-- `.ts` imports everywhere (Bun resolves natively, Node uses --experimental-strip-types)
-- `src/core/` kept separate for future VSCode extension to reuse
-- Templates use simple `{{VAR}}` replacement, no template engine
-- Plugin auto-scaffolds .agents/ on session.created if AGENTS.md exists but .agents/ doesn't
-- npm scope: `@vuau`
-- GitHub repo: `vuau/agent-memory` (public)
+### TASKS.md update
+Before ending a session with unfinished work, move items to `## In Progress` or `## Up Next`.
 
-## Publish workflow
-```bash
-npm login  # as phamvuau
-npm publish --access public
-```
+### Rules
+- Keep MEMORY.md entries to 1 line each. Details go in spec files.
+- If MEMORY.md > 150 lines, archive old entries.
+- Do not create additional memory files outside `.agents/`.
+
+## Response Style
+- Concise, concrete, implementation-focused.
+- If uncertain, say `I don't know`, then give fastest verification step.
+- Do not invent files, APIs, or command outputs.

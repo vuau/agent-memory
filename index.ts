@@ -6,4 +6,6 @@
  */
 
 // Re-export core utilities for programmatic use
-export * from "./src/core/index.ts"
+export { scaffold, updateRouter, type ScaffoldResult, type ScaffoldOptions } from "./src/scaffold.js"
+export { doctor } from "./src/doctor.js"
+export * from "./src/types.js"

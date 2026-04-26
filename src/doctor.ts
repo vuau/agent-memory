@@ -10,9 +10,10 @@ import {
   MEMORY_FILE,
   TASKS_FILE,
   AGENTS_MD,
+  CUSTOM_FILE,
   type DoctorResult,
   type DoctorIssue,
-} from "./types.ts"
+} from "./types.js"
 
 export function doctor(projectDir: string): DoctorResult {
   const issues: DoctorIssue[] = []
@@ -20,6 +21,7 @@ export function doctor(projectDir: string): DoctorResult {
   // Check required files
   const required = [
     { file: AGENTS_MD, desc: "Root router file" },
+    { file: CUSTOM_FILE, desc: "Project specific rules" },
     { file: MEMORY_FILE, desc: "Long-term memory" },
     { file: TASKS_FILE, desc: "Working memory" },
   ]

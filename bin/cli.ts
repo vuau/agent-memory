@@ -8,9 +8,9 @@
 
 import { existsSync } from "fs"
 import { join } from "path"
-import { scaffold, type ScaffoldOptions } from "../src/core/scaffold.ts"
-import { doctor } from "../src/core/doctor.ts"
-import { AGENTS_MD, MEMORY_FILE, TASKS_FILE } from "../src/core/types.ts"
+import { scaffold, updateRouter, type ScaffoldOptions } from "../src/scaffold.js"
+import { doctor } from "../src/doctor.js"
+import { AGENTS_MD } from "../src/types.js"
 
 const args = process.argv.slice(2)
 const command = args[0]
@@ -25,6 +25,7 @@ function printUsage() {
 
 Usage:
   agent-memory init [options]    Scaffold .agents/ structure and AGENTS.md
+  agent-memory update            Update AGENTS.md router to latest version
   agent-memory doctor            Validate .agents/ structure
   agent-memory help              Show this help
 
@@ -87,6 +88,32 @@ async function runInit() {
 }
 
 // ─────────────────────────────────────────────────────────────
+// Update command
+// ─────────────────────────────────────────────────────────────
+
+async function runUpdate() {
+  const cwd = process.cwd()
+  const agentsMdPath = join(cwd, AGENTS_MD)
+  
+  if (!existsSync(agentsMdPath)) {
+    console.error("✗ AGENTS.md not found. Please run 'agent-memory init' first.")
+    process.exit(1)
+  }
+
+  console.log(`\nUpdating ${AGENTS_MD} in ${cwd}...\n`)
+  
+  const updated = updateRouter(cwd)
+  if (updated) {
+    console.log(`  ✓ ${AGENTS_MD} updated to the latest template.`)
+    console.log(`  (Note: Your custom rules in .agents/CUSTOM.md were not affected)`)
+  } else {
+    console.error("✗ Failed to update AGENTS.md")
+    process.exit(1)
+  }
+  console.log("")
+}
+
+// ─────────────────────────────────────────────────────────────
 // Doctor command
 // ─────────────────────────────────────────────────────────────
 
@@ -120,6 +147,12 @@ function runDoctor() {
 switch (command) {
   case "init":
     runInit().catch((err) => {
+      console.error("Error:", err.message)
+      process.exit(1)
+    })
+    break
+  case "update":
+    runUpdate().catch((err) => {
       console.error("Error:", err.message)
       process.exit(1)
     })

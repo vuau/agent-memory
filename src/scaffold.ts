@@ -14,7 +14,8 @@ import {
   MEMORY_DETAIL_FILE,
   TASKS_FILE,
   AGENTS_MD,
-} from "./types.ts"
+  CUSTOM_FILE,
+} from "./types.js"
 
 // ─────────────────────────────────────────────────────────────
 // Template resolution
@@ -99,6 +100,7 @@ export function scaffold(projectDir: string, options: ScaffoldOptions = {}): Sca
     { target: MEMORY_FILE, template: "MEMORY.md" },
     { target: MEMORY_DETAIL_FILE, template: "MEMORY-DETAIL.md" },
     { target: TASKS_FILE, template: "TASKS.md" },
+    { target: CUSTOM_FILE, template: "CUSTOM.md" },
   ]
 
   for (const { target, template } of coreFiles) {
@@ -162,4 +164,20 @@ function guessProjectName(dir: string): string {
     } catch {}
   }
   return dir.split("/").pop() || "Project"
+}
+
+// ─────────────────────────────────────────────────────────────
+// Update Router
+// ─────────────────────────────────────────────────────────────
+
+export function updateRouter(projectDir: string): boolean {
+  const targetPath = join(projectDir, AGENTS_MD)
+  if (!existsSync(targetPath)) return false
+
+  const projectName = guessProjectName(projectDir)
+  const vars = { PROJECT_NAME: projectName }
+  const content = applyVars(readTemplate("AGENTS.md"), vars)
+  
+  writeFileSync(targetPath, content)
+  return true
 }

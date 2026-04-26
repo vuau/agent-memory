@@ -1,22 +1,18 @@
 # {{PROJECT_NAME}} - AGENTS
 
-Router file for AI agents. Keep under 150 lines.
+Router file for AI agents.
+
+> **Note**: This file is automatically managed by `@vuau/agent-memory`.
+> Do not add project-specific rules here, as they may be overwritten by `agent-memory update`.
+>
+> 👉 **For project-specific rules, context, and document mapping, see `.agents/CUSTOM.md`**
 
 ## Priority
 1. User request first.
-2. This `AGENTS.md`.
-3. Spec files in `.agents/spec/`.
-4. If conflict remains, choose smallest safe change and state assumption.
-
-## Documentation Map
-
-| Task | Spec File |
-|------|-----------|
-| Past decisions (1-line) | `.agents/MEMORY.md` |
-| Past decisions (full context) | `.agents/MEMORY-DETAIL.md` |
-| Current work in progress | `.agents/TASKS.md` |
-
-> Add your own spec files to `.agents/spec/` and reference them here.
+2. The rules in `.agents/CUSTOM.md`.
+3. This `AGENTS.md`.
+4. Spec files in `.agents/spec/`.
+5. If conflict remains, choose smallest safe change and state assumption.
 
 ## Memory Protocol
 
@@ -41,5 +37,6 @@ Before ending a session with unfinished work, move items to `## In Progress` or 
 
 ## Response Style
 - Concise, concrete, implementation-focused.
+- Propose the simplest solution first (KISS & YAGNI) before writing code.
 - If uncertain, say `I don't know`, then give fastest verification step.
 - Do not invent files, APIs, or command outputs.

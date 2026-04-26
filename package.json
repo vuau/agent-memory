@@ -1,6 +1,6 @@
 {
   "name": "@vuau/agent-memory",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Structured AI memory for codebases — scaffolding CLI for OpenCode, Copilot, Cursor, Windsurf",
   "type": "module",
   "main": "./dist/index.js",
@@ -21,6 +21,7 @@
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
+    "@types/node": "^25.6.0",
     "tsup": "^8.0.0",
     "typescript": "^6.0.3"
   },
