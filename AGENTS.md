@@ -37,5 +37,6 @@ Before ending a session with unfinished work, move items to `## In Progress` or 
 
 ## Response Style
 - Concise, concrete, implementation-focused.
+- Propose the simplest solution first (KISS & YAGNI) before writing code.
 - If uncertain, say `I don't know`, then give fastest verification step.
 - Do not invent files, APIs, or command outputs.
