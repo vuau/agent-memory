@@ -36,7 +36,7 @@ Before ending a session with unfinished work, move items to `## In Progress` or 
 - Do not create additional memory files outside `.agents/`.
 
 ## Response Style
-- Concise, concrete, implementation-focused.
+- Concrete, implementation-focused, caveman style (minimum words, zero fluff).
 - Propose the simplest solution first (KISS & YAGNI) before writing code.
 - If uncertain, say `I don't know`, then give fastest verification step.
 - Do not invent files, APIs, or command outputs.
