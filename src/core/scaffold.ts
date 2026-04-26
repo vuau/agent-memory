@@ -1,7 +1,6 @@
 /**
  * Scaffold — create .agents/ directory structure in a project.
  *
- * Supports multiple IDEs: OpenCode, Copilot, Cursor, Windsurf
  * Idempotent: skips existing files unless force=true.
  */
 
@@ -15,9 +14,6 @@ import {
   MEMORY_DETAIL_FILE,
   TASKS_FILE,
   AGENTS_MD,
-  COPILOT_INSTRUCTIONS,
-  CURSOR_RULES,
-  WINDSURF_RULES,
 } from "./types.ts"
 
 // ─────────────────────────────────────────────────────────────
@@ -62,10 +58,6 @@ function applyVars(content: string, vars: Record<string, string>): string {
 
 export interface ScaffoldOptions {
   projectName?: string
-  opencode?: boolean
-  copilot?: boolean
-  cursor?: boolean
-  windsurf?: boolean
   force?: boolean
 }
 
@@ -84,13 +76,6 @@ export function scaffold(projectDir: string, options: ScaffoldOptions = {}): Sca
   const vars = { PROJECT_NAME: projectName }
   const force = options.force || false
 
-  // Default to OpenCode if no IDE specified
-  const hasAnyIde = options.opencode || options.copilot || options.cursor || options.windsurf
-  const useOpencode = hasAnyIde ? options.opencode : true
-  const useCopilot = options.copilot || false
-  const useCursor = options.cursor || false
-  const useWindsurf = options.windsurf || false
-
   // ─────────────────────────────────────────────────────────────
   // Create directories
   // ─────────────────────────────────────────────────────────────
@@ -99,10 +84,6 @@ export function scaffold(projectDir: string, options: ScaffoldOptions = {}): Sca
     join(projectDir, AGENTS_DIR),
     join(projectDir, SPEC_DIR),
   ]
-  
-  if (useCopilot) {
-    dirs.push(join(projectDir, ".github"))
-  }
   
   for (const dir of dirs) {
     if (!existsSync(dir)) {
@@ -139,52 +120,16 @@ export function scaffold(projectDir: string, options: ScaffoldOptions = {}): Sca
   }
 
   // ─────────────────────────────────────────────────────────────
-  // IDE-specific config files
+  // Router file (AGENTS.md)
   // ─────────────────────────────────────────────────────────────
 
-  // OpenCode: AGENTS.md
-  if (useOpencode) {
-    writeFileIfNeeded(
-      join(projectDir, AGENTS_MD),
-      applyVars(readTemplate("AGENTS.md"), vars),
-      AGENTS_MD,
-      result,
-      force
-    )
-  }
-
-  // GitHub Copilot: .github/copilot-instructions.md
-  if (useCopilot) {
-    writeFileIfNeeded(
-      join(projectDir, COPILOT_INSTRUCTIONS),
-      applyVars(readTemplate("copilot-instructions.md"), vars),
-      COPILOT_INSTRUCTIONS,
-      result,
-      force
-    )
-  }
-
-  // Cursor: .cursorrules
-  if (useCursor) {
-    writeFileIfNeeded(
-      join(projectDir, CURSOR_RULES),
-      applyVars(readTemplate("cursorrules.md"), vars),
-      CURSOR_RULES,
-      result,
-      force
-    )
-  }
-
-  // Windsurf: .windsurfrules
-  if (useWindsurf) {
-    writeFileIfNeeded(
-      join(projectDir, WINDSURF_RULES),
-      applyVars(readTemplate("windsurfrules.md"), vars),
-      WINDSURF_RULES,
-      result,
-      force
-    )
-  }
+  writeFileIfNeeded(
+    join(projectDir, AGENTS_MD),
+    applyVars(readTemplate("AGENTS.md"), vars),
+    AGENTS_MD,
+    result,
+    force
+  )
 
   return result
 }

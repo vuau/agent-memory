@@ -168,27 +168,21 @@ Tài liệu này đề xuất kiến trúc khả năng skalabiliti cho AI memory
 
 ---
 
-## IDE Integration Points
+## Điểm Tích Hợp
 
-### OpenCode
-- Reads: `AGENTS.md` (native)
-- Agents follow rules trong AGENTS.md
-- Writes: Agent appends đến MEMORY.md/TASKS.md/spec/
+Mặc định, chúng tôi scaffold `AGENTS.md` hoạt động như root router cho AI coding assistant của bạn. File này chứa các rules và documentation maps trỏ đến thư mục `.agents/`.
 
-### GitHub Copilot (VSCode)
-- Reads: `.github/copilot-instructions.md` (GitHub convention)
-- copilot-instructions.md = cùng router format với AGENTS.md
-- Points đến `.agents/MEMORY.md` + spec files
-- Writes: Agent follows rules → appends khi appropriate
+Nếu công cụ AI cụ thể của bạn yêu cầu một tên file khác, bạn có thể dễ dàng dùng symlink file `AGENTS.md`:
 
-### Cursor / Windsurf
-- Reads: `.cursorrules` / `.windsurfrules` (IDE convention)
-- Cùng router format, points đến `.agents/`
-- Writes: Agent rules instruct direct append
+```bash
+# Ví dụ: Cho Cursor
+ln -s AGENTS.md .cursorrules
 
-### CLI / Non-IDE Workflows
-- Humans có thể read/edit `.agents/` files trực tiếp
-- Không cần special IDE integration
+# Ví dụ: Cho GitHub Copilot
+mkdir -p .github && ln -s ../AGENTS.md .github/copilot-instructions.md
+```
+
+Điều này đảm bảo single source of truth (`AGENTS.md`) được duy trì trong khi cung cấp khả năng tương thích ngược với mọi công cụ.
 
 ---
 
@@ -218,12 +212,12 @@ Tài liệu này đề xuất kiến trúc khả năng skalabiliti cho AI memory
    - Keep `.memsearch/memory/` như archive (1 year retention)
    - Delete milvus.db
 
-### Từ .github/copilot-instructions.md (monolithic)
+### Từ Monolithic Config Files (vd: .cursorrules)
 
 1. **Extract decisions** → `.agents/MEMORY.md`
 2. **Extract patterns** → `.agents/spec/patterns.md`
 3. **Extract commands** → `AGENTS.md`
-4. **Keep router** → update `.github/copilot-instructions.md` để point đến `.agents/`
+4. **Keep router** → Tạo symlink từ config file cũ của bạn trỏ tới `AGENTS.md`
 
 ---
 
@@ -253,10 +247,8 @@ Tài liệu này đề xuất kiến trúc khả năng skalabiliti cho AI memory
 ## Công cụ Support
 
 ### CLI
-- ✓ `npx @vuau/agent-memory init` — scaffold structure (interactive hoặc với flags)
-- ✓ `npx @vuau/agent-memory init --opencode` — chỉ OpenCode
-- ✓ `npx @vuau/agent-memory init --copilot --cursor` — nhiều IDEs
-- ✓ `npx @vuau/agent-memory init --all` — tất cả IDEs
+- ✓ `npx @vuau/agent-memory init` — scaffold structure (`AGENTS.md` + `.agents/`)
+- ✓ `npx @vuau/agent-memory init --force` — ghi đè files có sẵn
 - ✓ `npx @vuau/agent-memory doctor` — validate structure
 - Planned: ✗ `report` — generate memory stats, archival suggestions
 

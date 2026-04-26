@@ -10,7 +10,6 @@ import {
   MEMORY_FILE,
   TASKS_FILE,
   AGENTS_MD,
-  COPILOT_INSTRUCTIONS,
   type DoctorResult,
   type DoctorIssue,
 } from "./types.ts"
@@ -37,16 +36,6 @@ export function doctor(projectDir: string): DoctorResult {
     if (!existsSync(join(projectDir, dir))) {
       issues.push({ level: "error", file: dir, message: "Directory missing" })
     }
-  }
-
-  // Check optional files
-  const copilotPath = join(projectDir, COPILOT_INSTRUCTIONS)
-  if (!existsSync(copilotPath)) {
-    issues.push({
-      level: "warning",
-      file: COPILOT_INSTRUCTIONS,
-      message: "Copilot instructions missing — VSCode/GitHub Copilot won't have context",
-    })
   }
 
   // Validate AGENTS.md has documentation map
@@ -79,57 +68,6 @@ export function doctor(projectDir: string): DoctorResult {
         file: MEMORY_FILE,
         message: `${lines} lines — consider compressing or archiving old entries`,
       })
-    }
-  }
-
-  // Check OpenCode wiring (only if .opencode/ directory exists)
-  const opencodePkgPath = join(projectDir, ".opencode", "package.json")
-  const opencodeJsonPath = join(projectDir, "opencode.json")
-  const opencodeExists = existsSync(join(projectDir, ".opencode"))
-
-  if (opencodeExists) {
-    if (!existsSync(opencodePkgPath)) {
-      issues.push({
-        level: "warning",
-        file: ".opencode/package.json",
-        message: "Missing — run 'agent-memory init --opencode' to wire up the plugin",
-      })
-    } else {
-      try {
-        const pkg = JSON.parse(readFileSync(opencodePkgPath, "utf-8"))
-        const deps = { ...pkg.dependencies, ...pkg.devDependencies }
-        if (!deps["@vuau/agent-memory"]) {
-          issues.push({
-            level: "warning",
-            file: ".opencode/package.json",
-            message: "@vuau/agent-memory not in dependencies — run 'agent-memory init --opencode'",
-          })
-        }
-      } catch {
-        issues.push({ level: "warning", file: ".opencode/package.json", message: "Invalid JSON" })
-      }
-    }
-
-    if (!existsSync(opencodeJsonPath)) {
-      issues.push({
-        level: "warning",
-        file: "opencode.json",
-        message: "Missing — run 'agent-memory init --opencode' to wire up the plugin",
-      })
-    } else {
-      try {
-        const config = JSON.parse(readFileSync(opencodeJsonPath, "utf-8"))
-        const plugins: string[] = config.plugin || []
-        if (!plugins.includes("@vuau/agent-memory")) {
-          issues.push({
-            level: "warning",
-            file: "opencode.json",
-            message: "@vuau/agent-memory not in plugin array — run 'agent-memory init --opencode'",
-          })
-        }
-      } catch {
-        issues.push({ level: "warning", file: "opencode.json", message: "Invalid JSON" })
-      }
     }
   }
 

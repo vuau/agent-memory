@@ -1,6 +1,6 @@
 # @vuau/agent-memory
 
-Bộ nhớ AI có cấu trúc cho các codebase. Hoạt động với OpenCode, GitHub Copilot, Cursor, Windsurf, và bất kỳ AI coding assistant nào đọc markdown files.
+Bộ nhớ AI có cấu trúc cho các codebase. Sử dụng `AGENTS.md` để hoạt động với OpenCode, GitHub Copilot, Cursor, Windsurf, và bất kỳ AI coding assistant nào đọc markdown files.
 
 ## Bài toán
 
@@ -14,24 +14,14 @@ AI coding assistants mất bối cảnh giữa các phiên. Họ không thể nh
 ## Bắt đầu nhanh
 
 ```bash
-# Interactive mode — chọn IDEs của bạn
 npx @vuau/agent-memory init
-
-# Hoặc chỉ định trực tiếp
-npx @vuau/agent-memory init --opencode           # Chỉ OpenCode
-npx @vuau/agent-memory init --copilot --cursor   # Nhiều IDEs
-npx @vuau/agent-memory init --all                # Tất cả IDEs
 ```
 
 ## Cấu trúc tạo ra
 
 ```
 / (Project Root)
-├── AGENTS.md                    # OpenCode rules
-├── .cursorrules                 # Cursor rules
-├── .windsurfrules               # Windsurf rules
-├── .github/
-│   └── copilot-instructions.md  # GitHub Copilot rules
+├── AGENTS.md                    # Root agent rules
 └── .agents/
     ├── MEMORY.md                # Long-term memory (decisions, patterns)
     ├── TASKS.md                 # Working memory (current tasks)
@@ -40,13 +30,13 @@ npx @vuau/agent-memory init --all                # Tất cả IDEs
 
 ## Cách hoạt động
 
-1. **Bạn chạy `init`** → Tạo IDE config files + `.agents/` structure
+1. **Bạn chạy `init`** → Tạo `AGENTS.md` + `.agents/` structure
 2. **Agent đọc rules** → Tìm documentation map trỏ đến `.agents/`
 3. **Agent làm việc** → Đọc MEMORY.md trước khi implement, update TASKS.md
 4. **Bạn approve decision** → Agent ghi 1-line entry vào MEMORY.md
 5. **Phiên tiếp theo** → Agent đọc memory, tiếp tục từ nơi dừng lại
 
-**Không cần plugin.** Rules trong AGENTS.md/copilot-instructions.md hướng dẫn agent phải làm gì.
+**Không cần plugin.** Rules trong `AGENTS.md` hướng dẫn agent phải làm gì.
 
 ## CLI Options
 
@@ -54,11 +44,6 @@ npx @vuau/agent-memory init --all                # Tất cả IDEs
 npx @vuau/agent-memory init [options]
 
 Options:
-  --opencode    Tạo AGENTS.md cho OpenCode
-  --copilot     Tạo .github/copilot-instructions.md
-  --cursor      Tạo .cursorrules
-  --windsurf    Tạo .windsurfrules
-  --all         Tạo config cho tất cả IDEs
   --force       Ghi đè files có sẵn mà không hỏi
   --name <n>    Tên project (mặc định: từ package.json)
 
@@ -97,7 +82,7 @@ Agents follow protocol này (defined trong config files):
 
 | Layer | File | Mục đích |
 |-------|------|----------|
-| Router | AGENTS.md / .cursorrules / etc | Rules + pointers (~100 dòng) |
+| Router | AGENTS.md | Rules + pointers (~100 dòng) |
 | Memory | .agents/MEMORY.md | Curated decisions (1-line each) |
 | Tasks | .agents/TASKS.md | Current work, next steps |
 | Specs | .agents/spec/*.md | Detailed docs (on-demand) |
@@ -117,14 +102,19 @@ File-based solution:
 
 ## Cross-IDE Compatibility
 
-| IDE | Config File | Reads .agents/* |
-|-----|-------------|-----------------|
-| OpenCode | AGENTS.md | ✅ |
-| GitHub Copilot | .github/copilot-instructions.md | ✅ |
-| Cursor | .cursorrules | ✅ |
-| Windsurf | .windsurfrules | ✅ |
+Mặc định, công cụ chỉ scaffold `AGENTS.md`, một chuẩn router file đang phổ biến.
 
-Tất cả IDEs dùng cùng `.agents/` memory structure.
+Nếu công cụ của bạn yêu cầu một file cụ thể (vd: Cursor yêu cầu `.cursorrules`, GitHub Copilot yêu cầu `.github/copilot-instructions.md`), bạn có thể đơn giản dùng symlink hoặc copy `AGENTS.md`:
+
+```bash
+# Cho Cursor
+ln -s AGENTS.md .cursorrules
+
+# Cho GitHub Copilot
+mkdir -p .github && ln -s ../AGENTS.md .github/copilot-instructions.md
+```
+
+Tất cả các công cụ sẽ cùng đọc chung cấu trúc bộ nhớ bên trong thư mục `.agents/`.
 
 ## Tài liệu
 

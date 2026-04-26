@@ -12,11 +12,8 @@ export const MEMORY_FILE = ".agents/MEMORY.md"
 export const MEMORY_DETAIL_FILE = ".agents/MEMORY-DETAIL.md"
 export const TASKS_FILE = ".agents/TASKS.md"
 
-// IDE-specific config files
-export const AGENTS_MD = "AGENTS.md"                              // OpenCode
-export const COPILOT_INSTRUCTIONS = ".github/copilot-instructions.md"  // GitHub Copilot
-export const CURSOR_RULES = ".cursorrules"                        // Cursor
-export const WINDSURF_RULES = ".windsurfrules"                    // Windsurf
+// Router config file
+export const AGENTS_MD = "AGENTS.md"
 
 // ─────────────────────────────────────────────────────────────
 // Types

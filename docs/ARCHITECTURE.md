@@ -168,28 +168,21 @@ This document proposes a generalizable architecture for AI memory across codebas
 
 ---
 
-## IDE Integration Points
+## Integration Points
 
-### OpenCode
-- Reads: AGENTS.md (via plugin hook)
-- Plugin auto-injects: `.agents/MEMORY.md` context on session start
-- Plugin reminds: Update TASKS.md on session idle
-- Writes: Agent appends to MEMORY.md/TASKS.md/spec/
+By default, we scaffold `AGENTS.md` which acts as the root router for your AI coding assistant. This file contains rules and documentation maps that point to the `.agents/` folder.
 
-### GitHub Copilot (VSCode)
-- Reads: `.github/copilot-instructions.md` (GitHub convention)
-- copilot-instructions.md = same router format as AGENTS.md
-- Points to `.agents/MEMORY.md` + spec files
-- Writes: User includes `@save memory: <decision>` in chat → agent appends
+If your specific AI tool requires a different file name, you can simply symlink the `AGENTS.md` file:
 
-### Cursor / Windsurf
-- Reads: `.cursorrules` / `.windsurfrules` (IDE convention)
-- Same router format, points to `.agents/`
-- Writes: Agent rules instruct direct append
+```bash
+# Example: For Cursor
+ln -s AGENTS.md .cursorrules
 
-### CLI / Non-IDE Workflows
-- Humans can read/edit `.agents/` files directly
-- No special IDE integration needed
+# Example: For GitHub Copilot
+mkdir -p .github && ln -s ../AGENTS.md .github/copilot-instructions.md
+```
+
+This ensures a single source of truth (`AGENTS.md`) is maintained while providing backward compatibility with any tool.
 
 ---
 
@@ -219,12 +212,12 @@ This document proposes a generalizable architecture for AI memory across codebas
    - Keep `.memsearch/memory/` as archive (1 year retention)
    - Delete milvus.db
 
-### From .github/copilot-instructions.md (monolithic)
+### From Monolithic Config Files (e.g. .cursorrules)
 
 1. **Extract decisions** → `.agents/MEMORY.md`
 2. **Extract patterns** → `.agents/spec/patterns.md`
 3. **Extract commands** → `AGENTS.md`
-4. **Keep router** → update `.github/copilot-instructions.md` to point to `.agents/`
+4. **Keep router** → Create symlink from your old config file to `AGENTS.md`
 
 ---
 
@@ -254,10 +247,8 @@ This document proposes a generalizable architecture for AI memory across codebas
 ## Tooling Support
 
 ### CLI
-- ✓ `npx @vuau/agent-memory init` — scaffold structure (interactive or with flags)
-- ✓ `npx @vuau/agent-memory init --opencode` — OpenCode only
-- ✓ `npx @vuau/agent-memory init --copilot --cursor` — multiple IDEs
-- ✓ `npx @vuau/agent-memory init --all` — all IDEs
+- ✓ `npx @vuau/agent-memory init` — scaffold structure (`AGENTS.md` + `.agents/`)
+- ✓ `npx @vuau/agent-memory init --force` — overwrite existing files
 - ✓ `npx @vuau/agent-memory doctor` — validate structure
 - Planned: ✗ `report` — generate memory stats, archival suggestions
 
