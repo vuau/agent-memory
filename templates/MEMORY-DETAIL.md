@@ -1,8 +1,5 @@
 # Memory Detail
 
-Full Problem/Solution context for entries in MEMORY.md. Read on-demand when needing to understand *why* a decision was made.
-
----
 
 ## Example Category
 

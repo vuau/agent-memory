@@ -1,8 +1,5 @@
 # Project Memory
 
-Curated decisions, patterns, and pointers. Agents: read before implementing.
-
----
 
 ## Architecture
 <!-- Add pointers to spec files: → Full spec: `.agents/spec/architecture.md` -->
