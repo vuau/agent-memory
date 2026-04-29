@@ -24,6 +24,7 @@ export function doctor(projectDir: string): DoctorResult {
     { file: CUSTOM_FILE, desc: "Project specific rules" },
     { file: MEMORY_FILE, desc: "Long-term memory" },
     { file: TASKS_FILE, desc: "Working memory" },
+    { file: `${SPEC_DIR}/coding-principles.md`, desc: "Coding principles (run `agent-memory update` to create)" },
   ]
 
   for (const { file, desc } of required) {
