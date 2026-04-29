@@ -35,6 +35,14 @@ Before ending a session with unfinished work, move items to `## In Progress` or 
 - If MEMORY.md > 150 lines, archive old entries.
 - Do not create additional memory files outside `.agents/`.
 
+## Coding Principles
+- State assumptions before implementing. If ambiguous, ask — don't pick silently.
+- Surgical changes: touch only what's needed, match existing style.
+- Remove only dead code YOUR changes created. Mention pre-existing issues, don't fix.
+- Every changed line must trace to user's request.
+- Complex tasks: define success criteria, verify before done.
+- Full details: `.agents/spec/coding-principles.md`
+
 ## Response Style
 - Concrete, implementation-focused, caveman style (minimum words, zero fluff).
 - Propose the simplest solution first (KISS & YAGNI) before writing code.

@@ -114,9 +114,24 @@ export function scaffold(projectDir: string, options: ScaffoldOptions = {}): Sca
     result.created.push(target)
   }
 
-  // Create .gitkeep in spec/ if empty
+  // ─────────────────────────────────────────────────────────────
+  // Managed spec files (always written/updated)
+  // ─────────────────────────────────────────────────────────────
+
+  const managedSpecs: Array<{ target: string; template: string }> = [
+    { target: `${SPEC_DIR}/coding-principles.md`, template: "spec/coding-principles.md" },
+  ]
+
+  for (const { target, template } of managedSpecs) {
+    const targetPath = join(projectDir, target)
+    const content = applyVars(readTemplate(template), vars)
+    writeFileSync(targetPath, content)
+    result.created.push(target)
+  }
+
+  // Create .gitkeep in spec/ if empty (skip if spec already has files)
   const specKeep = join(projectDir, SPEC_DIR, ".gitkeep")
-  if (!existsSync(specKeep)) {
+  if (!existsSync(specKeep) && !managedSpecs.length) {
     writeFileSync(specKeep, "")
     result.created.push(`${SPEC_DIR}/.gitkeep`)
   }
@@ -179,5 +194,17 @@ export function updateRouter(projectDir: string): boolean {
   const content = applyVars(readTemplate("AGENTS.md"), vars)
   
   writeFileSync(targetPath, content)
+
+  // Update managed spec files
+  const managedSpecs = [
+    { target: `${SPEC_DIR}/coding-principles.md`, template: "spec/coding-principles.md" },
+  ]
+  for (const { target, template } of managedSpecs) {
+    const specPath = join(projectDir, target)
+    const specDir = dirname(specPath)
+    if (!existsSync(specDir)) mkdirSync(specDir, { recursive: true })
+    writeFileSync(specPath, applyVars(readTemplate(template), vars))
+  }
+
   return true
 }
