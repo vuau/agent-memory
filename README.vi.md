@@ -1,6 +1,6 @@
 # @vuau/agent-memory
 
-Bộ nhớ AI có cấu trúc cho các codebase. Hoạt động với GitHub Copilot, Cursor, Windsurf, và bất kỳ AI coding assistant nào đọc markdown files.
+Bộ nhớ AI có cấu trúc cho các codebase. Hoạt động với GitHub Copilot, Cursor, Windsurf, Claude Code, OpenCode, và bất kỳ AI coding assistant nào đọc markdown files.
 
 **[English →](./README.md)**
 
@@ -18,7 +18,8 @@ npx @vuau/agent-memory init
 
 ```
 / (Project Root)
-├── AGENTS.md                    # Router cố định (quản lý bởi package)
+├── AGENTS.md                    # Copilot, Cursor, Windsurf, OpenCode …
+├── CLAUDE.md                    # Claude Code (symlink → AGENTS.md trên macOS/Linux)
 └── .agents/
     ├── CUSTOM.md                # Rules riêng của project & mapping tài liệu
     ├── MEMORY.md                # Bộ nhớ dài hạn (quyết định, patterns)
@@ -29,15 +30,15 @@ npx @vuau/agent-memory init
 ## Cách hoạt động
 
 1. **Bạn chạy `init`** → Tạo cấu trúc thư mục. `AGENTS.md` sẽ trỏ đến `.agents/CUSTOM.md`.
-2. **Agent đọc rules** → Tuân theo ưu tiên: CUSTOM.md > AGENTS.md > spec files.
+2. **Agent đọc rules** → Tuân theo ưu tiên: CUSTOM.md > AGENTS/CLAUDE.md > spec files.
 3. **Agent làm việc** → Cập nhật MEMORY.md cho các quyết định và TASKS.md cho tiến độ công việc.
-4. **Cập nhật package** → Chạy `agent-memory update` để nhận router `AGENTS.md` mới nhất mà không mất các rules tùy chỉnh của bạn.
+4. **Cập nhật package** → Chạy `agent-memory update` để nhận các router files mới nhất mà không mất rules tùy chỉnh của bạn.
 
 ## Các lệnh CLI
 
 ```bash
 npx @vuau/agent-memory init      # Khởi tạo cấu trúc .agents/
-npx @vuau/agent-memory update    # Cập nhật router AGENTS.md lên bản mới nhất
+npx @vuau/agent-memory update    # Cập nhật router files (AGENTS.md, CLAUDE.md) lên bản mới nhất
 npx @vuau/agent-memory doctor    # Kiểm tra tính toàn vẹn của cấu trúc
 npx @vuau/agent-memory help      # Hiện trợ giúp
 ```
@@ -46,8 +47,12 @@ npx @vuau/agent-memory help      # Hiện trợ giúp
 
 ### Phân tách Router
 
-- **AGENTS.md**: Router cốt lõi được quản lý bởi thư viện. Không sửa file này trực tiếp vì nó có thể bị ghi đè khi update.
-- **.agents/CUSTOM.md**: Nơi dành riêng cho dự án của bạn để viết custom rules, quyết định kiến trúc và mapping tài liệu.
+- **`AGENTS.md`** — Dành cho GitHub Copilot, Cursor, Windsurf, OpenCode, và các AI coding assistants thông thường.
+  Cách đọc: Copilot (chỉ định trong `.github/copilot-instructions.md`), Cursor (`@AGENTS.md`), Windsurf (tham chiếu trong `.windsurfrules`).
+- **`CLAUDE.md`** — Riêng cho Claude Code.
+  Trên macOS/Linux: **symlink đến `AGENTS.md`** để luôn đồng bộ.
+  Trên Windows: **hook file** yêu cầu Claude Code đọc `AGENTS.md`.
+- **`.agents/CUSTOM.md`** — Nơi dành riêng cho dự án của bạn để viết custom rules, quyết định kiến trúc và mapping tài liệu.
 
 ### Các file bộ nhớ
 

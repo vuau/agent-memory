@@ -10,7 +10,7 @@ import { existsSync } from "fs"
 import { join } from "path"
 import { scaffold, updateRouter, type ScaffoldOptions } from "../src/scaffold.js"
 import { doctor } from "../src/doctor.js"
-import { AGENTS_MD } from "../src/types.js"
+import { AGENTS_MD, CLAUDE_MD } from "../src/types.js"
 
 const args = process.argv.slice(2)
 const command = args[0]
@@ -24,8 +24,8 @@ function printUsage() {
 @vuau/agent-memory — Structured AI memory for codebases
 
 Usage:
-  agent-memory init [options]    Scaffold .agents/ structure and AGENTS.md
-  agent-memory update            Update AGENTS.md router to latest version
+  agent-memory init [options]    Scaffold .agents/ structure, AGENTS.md and CLAUDE.md
+  agent-memory update            Update router files to latest version
   agent-memory doctor            Validate .agents/ structure
   agent-memory help              Show this help
 
@@ -81,7 +81,7 @@ async function runInit() {
   
   // Next steps
   console.log("\nNext steps:")
-  console.log("  1. Edit AGENTS.md — add project-specific rules")
+  console.log("  1. Edit AGENTS.md (OpenCode) / CLAUDE.md (Claude Code) with project-specific rules")
   console.log("  2. Add spec files to .agents/spec/ for detailed documentation")
   console.log("  3. Agent will read rules and write to .agents/MEMORY.md automatically")
   console.log("")
@@ -100,14 +100,14 @@ async function runUpdate() {
     process.exit(1)
   }
 
-  console.log(`\nUpdating ${AGENTS_MD} in ${cwd}...\n`)
+  console.log(`\nUpdating ${AGENTS_MD} / ${CLAUDE_MD} in ${cwd}...\n`)
   
   const updated = updateRouter(cwd)
   if (updated) {
-    console.log(`  ✓ ${AGENTS_MD} updated to the latest template.`)
+    console.log(`  ✓ ${AGENTS_MD} and ${CLAUDE_MD} updated to the latest template.`)
     console.log(`  (Note: Your custom rules in .agents/CUSTOM.md were not affected)`)
   } else {
-    console.error("✗ Failed to update AGENTS.md")
+    console.error("✗ Failed to update router files")
     process.exit(1)
   }
   console.log("")

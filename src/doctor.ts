@@ -2,14 +2,16 @@
  * Doctor — validate .agents/ structure integrity.
  */
 
-import { existsSync, readFileSync } from "fs"
+import { existsSync, readFileSync, lstatSync } from "fs"
 import { join } from "path"
+import { platform } from "os"
 import {
   AGENTS_DIR,
   SPEC_DIR,
   MEMORY_FILE,
   TASKS_FILE,
   AGENTS_MD,
+  CLAUDE_MD,
   CUSTOM_FILE,
   type DoctorResult,
   type DoctorIssue,
@@ -20,7 +22,8 @@ export function doctor(projectDir: string): DoctorResult {
 
   // Check required files
   const required = [
-    { file: AGENTS_MD, desc: "Root router file" },
+    { file: AGENTS_MD, desc: "Root router file (OpenCode)" },
+    { file: CLAUDE_MD, desc: "Root router file (Claude Code)" },
     { file: CUSTOM_FILE, desc: "Project specific rules" },
     { file: MEMORY_FILE, desc: "Long-term memory" },
     { file: TASKS_FILE, desc: "Working memory" },
@@ -41,23 +44,39 @@ export function doctor(projectDir: string): DoctorResult {
     }
   }
 
-  // Validate AGENTS.md has documentation map
-  const agentsPath = join(projectDir, AGENTS_MD)
-  if (existsSync(agentsPath)) {
-    const content = readFileSync(agentsPath, "utf-8")
-    if (!content.includes(".agents/")) {
-      issues.push({
-        level: "warning",
-        file: AGENTS_MD,
-        message: "No references to .agents/ — agents may not find memory files",
-      })
-    }
-    if (content.split("\n").length > 150) {
-      issues.push({
-        level: "warning",
-        file: AGENTS_MD,
-        message: "Over 150 lines — consider keeping it concise as a router",
-      })
+  // Validate router files have documentation map
+  const routerFiles = [AGENTS_MD, CLAUDE_MD]
+  for (const rf of routerFiles) {
+    const rfPath = join(projectDir, rf)
+    if (existsSync(rfPath)) {
+      // Check symlink status for CLAUDE.md on non-Windows
+      if (rf === CLAUDE_MD && platform() !== "win32") {
+        try {
+          if (!lstatSync(rfPath).isSymbolicLink()) {
+            issues.push({
+              level: "warning",
+              file: CLAUDE_MD,
+              message: "Plain file — should be a symlink to AGENTS.md. Run 'agent-memory update' to fix",
+            })
+          }
+        } catch {}
+      }
+
+      const content = readFileSync(rfPath, "utf-8")
+      if (!content.includes(".agents/")) {
+        issues.push({
+          level: "warning",
+          file: rf,
+          message: "No references to .agents/ — agents may not find memory files",
+        })
+      }
+      if (content.split("\n").length > 150) {
+        issues.push({
+          level: "warning",
+          file: rf,
+          message: "Over 150 lines — consider keeping it concise as a router",
+        })
+      }
     }
   }
 

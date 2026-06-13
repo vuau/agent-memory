@@ -4,9 +4,10 @@
  * Idempotent: skips existing files unless force=true.
  */
 
-import { existsSync, mkdirSync, writeFileSync, readFileSync } from "fs"
+import { existsSync, mkdirSync, writeFileSync, readFileSync, symlinkSync, lstatSync, unlinkSync } from "fs"
 import { join, resolve, dirname } from "path"
 import { fileURLToPath } from "url"
+import { platform } from "os"
 import {
   AGENTS_DIR,
   SPEC_DIR,
@@ -14,6 +15,7 @@ import {
   MEMORY_DETAIL_FILE,
   TASKS_FILE,
   AGENTS_MD,
+  CLAUDE_MD,
   CUSTOM_FILE,
 } from "./types.js"
 
@@ -137,9 +139,10 @@ export function scaffold(projectDir: string, options: ScaffoldOptions = {}): Sca
   }
 
   // ─────────────────────────────────────────────────────────────
-  // Router file (AGENTS.md)
+  // Router files (AGENTS.md + CLAUDE.md)
   // ─────────────────────────────────────────────────────────────
 
+  // AGENTS.md — plain file from template
   writeFileIfNeeded(
     join(projectDir, AGENTS_MD),
     applyVars(readTemplate("AGENTS.md"), vars),
@@ -147,6 +150,9 @@ export function scaffold(projectDir: string, options: ScaffoldOptions = {}): Sca
     result,
     force
   )
+
+  // CLAUDE.md — OS-dependent: symlink on macOS/Linux, hook file on Windows
+  writeClaudeMd(projectDir, vars, result, force)
 
   return result
 }
@@ -185,15 +191,100 @@ function guessProjectName(dir: string): string {
 // Update Router
 // ─────────────────────────────────────────────────────────────
 
-export function updateRouter(projectDir: string): boolean {
-  const targetPath = join(projectDir, AGENTS_MD)
-  if (!existsSync(targetPath)) return false
+// ─────────────────────────────────────────────────────────────
+// CLAUDE.md: OS-aware write logic
+// ─────────────────────────────────────────────────────────────
 
+const IS_WIN = platform() === "win32"
+
+function writeClaudeMd(
+  projectDir: string,
+  vars: Record<string, string>,
+  result: ScaffoldResult,
+  force: boolean
+): void {
+  const targetPath = join(projectDir, CLAUDE_MD)
+
+  if (IS_WIN) {
+    // Windows: hook file referencing AGENTS.md
+    writeFileIfNeeded(
+      targetPath,
+      applyVars(readTemplate("CLAUDE.md"), vars),
+      CLAUDE_MD,
+      result,
+      force
+    )
+    return
+  }
+
+  // macOS / Linux: symlink → AGENTS.md
+  const linkTarget = AGENTS_MD  // relative symlink
+
+  if (existsSync(targetPath)) {
+    if (!force) {
+      result.skipped.push(CLAUDE_MD)
+      return
+    }
+    // Remove existing file/symlink before recreating
+    unlinkSync(targetPath)
+  }
+
+  try {
+    symlinkSync(linkTarget, targetPath)
+    result.created.push(`${CLAUDE_MD} → ${AGENTS_MD}`)
+  } catch (err) {
+    // Fallback: write hook file if symlink fails (e.g. permission, unsupported FS)
+    writeFileSync(targetPath, applyVars(readTemplate("CLAUDE.md"), vars))
+    result.created.push(`${CLAUDE_MD} (symlink failed, wrote file)`)
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Update Router
+// ─────────────────────────────────────────────────────────────
+
+export function updateRouter(projectDir: string): boolean {
   const projectName = guessProjectName(projectDir)
   const vars = { PROJECT_NAME: projectName }
-  const content = applyVars(readTemplate("AGENTS.md"), vars)
-  
-  writeFileSync(targetPath, content)
+
+  // AGENTS.md — always rewrite from template
+  const agentsPath = join(projectDir, AGENTS_MD)
+  if (!existsSync(agentsPath)) return false
+  writeFileSync(agentsPath, applyVars(readTemplate("AGENTS.md"), vars))
+
+  // CLAUDE.md — ensure it exists in correct form
+  const claudePath = join(projectDir, CLAUDE_MD)
+
+  if (IS_WIN) {
+    writeFileSync(claudePath, applyVars(readTemplate("CLAUDE.md"), vars))
+  } else {
+    // macOS / Linux: ensure symlink exists
+    let needsRecreate = false
+
+    if (!existsSync(claudePath)) {
+      needsRecreate = true
+    } else {
+      try {
+        const stat = lstatSync(claudePath)
+        if (!stat.isSymbolicLink()) {
+          // Was a plain file (e.g. from old version), replace with symlink
+          needsRecreate = true
+        }
+      } catch {
+        needsRecreate = true
+      }
+    }
+
+    if (needsRecreate) {
+      try {
+        if (existsSync(claudePath)) unlinkSync(claudePath)
+        symlinkSync(AGENTS_MD, claudePath)
+      } catch {
+        // Fallback
+        writeFileSync(claudePath, applyVars(readTemplate("CLAUDE.md"), vars))
+      }
+    }
+  }
 
   // Update managed spec files
   const managedSpecs = [
