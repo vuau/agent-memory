@@ -19,6 +19,9 @@ Router file for AI coding assistants: OpenCode, GitHub Copilot, Cursor, Windsurf
 
 ## Memory Protocol
 
+### Session Start
+- Read `.agents/MEMORY.md` before starting any task.
+
 ### When to write
 - User approves a decision or pattern → append to `.agents/MEMORY.md`
 - Explore codebase/architecture → update relevant `.agents/spec/*.md`
@@ -28,14 +31,14 @@ Router file for AI coding assistants: OpenCode, GitHub Copilot, Cursor, Windsurf
 ```
 - YYYY-MM-DD: <1-line decision or pattern> → detail
 ```
-Place under the appropriate category. Add `→ detail` pointer when full context exists in MEMORY-DETAIL.md.
+Place under the appropriate category. Add `→ detail` pointer when full context exists in `MEMORY-DETAIL.md`.
 
 ### TASKS.md update
 Before ending a session with unfinished work, move items to `## In Progress` or `## Up Next`.
 
 ### Rules
-- Keep MEMORY.md entries to 1 line each. Details go in spec files.
-- If MEMORY.md > 150 lines, archive old entries.
+- Keep `MEMORY.md` entries to 1 line each. Details go in spec files.
+- If `MEMORY.md` > 150 lines, archive old entries.
 - Do not create additional memory files outside `.agents/`.
 
 ## Coding Principles
