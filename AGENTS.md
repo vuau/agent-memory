@@ -1,6 +1,6 @@
 # @vuau/agent-memory - AGENTS
 
-Router file for AI agents.
+Router file for coding agents.
 
 > **Note**: This file is automatically managed by `@vuau/agent-memory`.
 > Do not add project-specific rules here, as they may be overwritten by `agent-memory update`.
@@ -16,6 +16,9 @@ Router file for AI agents.
 
 ## Memory Protocol
 
+### Session Start
+- Read `.agents/MEMORY.md` before starting any task.
+
 ### When to write
 - User approves a decision or pattern → append to `.agents/MEMORY.md`
 - Explore codebase/architecture → update relevant `.agents/spec/*.md`
@@ -25,15 +28,23 @@ Router file for AI agents.
 ```
 - YYYY-MM-DD: <1-line decision or pattern> → detail
 ```
-Place under the appropriate category. Add `→ detail` pointer when full context exists in MEMORY-DETAIL.md.
+Place under the appropriate category. Add `→ detail` pointer when full context exists in `MEMORY-DETAIL.md`.
 
 ### TASKS.md update
 Before ending a session with unfinished work, move items to `## In Progress` or `## Up Next`.
 
 ### Rules
-- Keep MEMORY.md entries to 1 line each. Details go in spec files.
-- If MEMORY.md > 150 lines, archive old entries.
+- Keep `MEMORY.md` entries to 1 line each. Details go in spec files.
+- If `MEMORY.md` > 150 lines, archive old entries.
 - Do not create additional memory files outside `.agents/`.
+
+## Coding Principles
+- State assumptions before implementing. If ambiguous, ask — don't pick silently.
+- Surgical changes: touch only what's needed, match existing style.
+- Remove only dead code YOUR changes created. Mention pre-existing issues, don't fix.
+- Every changed line must trace to user's request.
+- Complex tasks: define success criteria, verify before done.
+- Full details: `.agents/spec/coding-principles.md`
 
 ## Response Style
 - Concrete, implementation-focused, caveman style (minimum words, zero fluff).
