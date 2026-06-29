@@ -1,14 +1,11 @@
 # {{PROJECT_NAME}} - AGENTS
 
-Router file for AI coding assistants: OpenCode, GitHub Copilot, Cursor, Windsurf, and others.
+Router file for coding agents.
 
 > **Note**: This file is automatically managed by `@vuau/agent-memory`.
 > Do not add project-specific rules here, as they may be overwritten by `agent-memory update`.
 >
 > 👉 **For project-specific rules, context, and document mapping, see `.agents/CUSTOM.md`**
->
-> 💡 **Claude Code users**: Install `@vuau/agent-memory` and run `init` to auto-generate `CLAUDE.md` —
->   a companion file that references this `AGENTS.md` so you get the same rules.
 
 ## Priority
 1. User request first.

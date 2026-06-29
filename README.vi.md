@@ -1,6 +1,6 @@
 # @vuau/agent-memory
 
-Bộ nhớ AI có cấu trúc cho các codebase. Hoạt động với GitHub Copilot, Cursor, Windsurf, Claude Code, OpenCode, và bất kỳ AI coding assistant nào đọc markdown files.
+Bộ nhớ AI có cấu trúc cho codebase — dành cho coding agents đọc AGENTS.md
 
 **[English →](./README.md)**
 

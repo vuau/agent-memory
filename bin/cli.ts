@@ -21,7 +21,7 @@ const command = args[0]
 
 function printUsage() {
   console.log(`
-@vuau/agent-memory — Structured AI memory for codebases
+@vuau/agent-memory — Structured memory for coding agents that read AGENTS.md
 
 Usage:
   agent-memory init [options]    Scaffold .agents/ structure, AGENTS.md and CLAUDE.md
@@ -46,29 +46,29 @@ Examples:
 async function runInit() {
   const cwd = process.cwd()
   const force = args.includes("--force")
-  
+
   // Parse --name
   const nameIdx = args.indexOf("--name")
   const projectName = nameIdx !== -1 ? args[nameIdx + 1] : undefined
-  
+
   // Build scaffold options
   const options: ScaffoldOptions = {
     projectName,
     force,
   }
-  
+
   // Run scaffold
   console.log(`\nInitializing agent memory in ${cwd}...\n`)
-  
+
   const result = scaffold(cwd, options)
-  
+
   if (result.created.length > 0) {
     console.log("Created:")
     for (const f of result.created) {
       console.log(`  ✓ ${f}`)
     }
   }
-  
+
   if (result.skipped.length > 0) {
     console.log("\nSkipped (already exist):")
     for (const f of result.skipped) {
@@ -78,7 +78,7 @@ async function runInit() {
       console.log("\nTip: Use --force to overwrite existing files.")
     }
   }
-  
+
   // Next steps
   console.log("\nNext steps:")
   console.log("  1. Edit AGENTS.md (OpenCode) / CLAUDE.md (Claude Code) with project-specific rules")
@@ -94,14 +94,14 @@ async function runInit() {
 async function runUpdate() {
   const cwd = process.cwd()
   const agentsMdPath = join(cwd, AGENTS_MD)
-  
+
   if (!existsSync(agentsMdPath)) {
     console.error("✗ AGENTS.md not found. Please run 'agent-memory init' first.")
     process.exit(1)
   }
 
   console.log(`\nUpdating ${AGENTS_MD} / ${CLAUDE_MD} in ${cwd}...\n`)
-  
+
   const updated = updateRouter(cwd)
   if (updated) {
     console.log(`  ✓ ${AGENTS_MD} and ${CLAUDE_MD} updated to the latest template.`)

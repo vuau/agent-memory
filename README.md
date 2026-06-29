@@ -1,6 +1,6 @@
 # @vuau/agent-memory
 
-Structured AI memory for codebases. Works with GitHub Copilot, Cursor, Windsurf, Claude Code, OpenCode, and any AI coding assistant that reads markdown files.
+Structured AI memory for codebases — for coding agents that read AGENTS.md
 
 **[Tiếng Việt →](./README.vi.md)**
 
